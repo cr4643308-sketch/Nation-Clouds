@@ -1,0 +1,60 @@
+{
+  "locations": [
+    { "id": "india", "name": "India (Delhi)", "markup": 1.0 },
+    { "id": "singapore", "name": "Singapore", "markup": 1.15 },
+    { "id": "germany", "name": "Germany", "markup": 1.4 }
+  ],
+  "addons": {
+    "ram": 40,
+    "cpu": 40,
+    "disk": 20
+  },
+  "categories": {
+    "premium": {
+      "name": "PREMIUM PLANS",
+      "plans": [
+        { "name": "Dirt", "ram": "2GB", "cpu": "100%", "storage": "10GB SSD", "basePrice": 30 },
+        { "name": "Stone", "ram": "4GB", "cpu": "200%", "storage": "20GB SSD", "basePrice": 70 },
+        { "name": "Coal", "ram": "8GB", "cpu": "300%", "storage": "40GB SSD", "basePrice": 250 },
+        { "name": "Iron", "ram": "12GB", "cpu": "350%", "storage": "60GB SSD", "basePrice": 400, "popular": true },
+        { "name": "Redstone", "ram": "16GB", "cpu": "400%", "storage": "80GB SSD", "basePrice": 500 },
+        { "name": "Lapis", "ram": "24GB", "cpu": "500%", "storage": "120GB SSD", "basePrice": 800 },
+        { "name": "Gold", "ram": "32GB", "cpu": "600%", "storage": "160GB SSD", "basePrice": 1000 }
+      ]
+    },
+    "vps": {
+      "name": "VPS PLANS",
+      "plans": [
+        { "name": "Plan 1", "ram": "8GB", "storage": "80GB NVMe", "basePrice": 800 },
+        { "name": "Plan 2", "ram": "16GB", "storage": "150GB NVMe", "basePrice": 1100 },
+        { "name": "Plan 3", "ram": "32GB", "storage": "300GB NVMe", "basePrice": 1900 },
+        { "name": "Plan 4", "ram": "64GB", "storage": "400GB NVMe", "basePrice": 2800 }
+      ]
+    },
+    "budget": {
+      "name": "BUDGET PLANS",
+      "plans": [
+        { "name": "Oak", "ram": "4GB", "storage": "8GB SSD", "cpu": "1.5 Cores", "basePrice": 80 },
+        { "name": "Gold", "ram": "8GB", "storage": "20GB SSD", "cpu": "3 Cores", "basePrice": 180 },
+        { "name": "Emerald", "ram": "16GB", "storage": "40GB SSD", "cpu": "5 Cores", "basePrice": 380, "popular": true },
+        { "name": "Diamond", "ram": "24GB", "storage": "50GB SSD", "cpu": "8 Cores", "basePrice": 600 },
+        { "name": "Netherite", "ram": "32GB", "storage": "80GB SSD", "cpu": "10 Cores", "basePrice": 1100 },
+        { "name": "Custom", "ram": "Custom", "storage": "Custom", "cpu": "Custom", "basePrice": 0, "custom": true }
+      ]
+    },
+    "performance": {
+      "name": "PERFORMANCE PLANS",
+      "plans": [
+        { "name": "Dirt", "ram": "2GB", "cpu": "100%", "storage": "10GB SSD", "basePrice": 80 },
+        { "name": "Stone", "ram": "4GB", "cpu": "200%", "storage": "20GB SSD", "basePrice": 160 },
+        { "name": "Coal", "ram": "8GB", "cpu": "300%", "storage": "40GB SSD", "basePrice": 320 },
+        { "name": "Iron", "ram": "12GB", "cpu": "350%", "storage": "60GB SSD", "basePrice": 480 },
+        { "name": "Redstone", "ram": "16GB", "cpu": "400%", "storage": "80GB SSD", "basePrice": 640 },
+        { "name": "Lapis", "ram": "24GB", "cpu": "500%", "storage": "120GB SSD", "basePrice": 960 },
+        { "name": "Gold", "ram": "32GB", "cpu": "600%", "storage": "160GB SSD", "basePrice": 1280 },
+        { "name": "Diamond", "ram": "48GB", "cpu": "∞", "storage": "240GB SSD", "basePrice": 1920, "elite": true },
+        { "name": "Netherite", "ram": "64GB", "cpu": "∞", "storage": "320GB SSD", "basePrice": 2560, "elite": true }
+      ]
+    }
+  }
+}
