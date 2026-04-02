@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import VirtualDashboard from './VirtualDashboard';
+import { useNationClouds } from '../../context/NationCloudsContext';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  masterNode: any;
-  onDeploy: (server: any) => void;
 }
 
-export default function DashboardModal({ isOpen, onClose, masterNode, onDeploy }: Props) {
+export default function DashboardModal({ isOpen, onClose }: Props) {
+  const { masterNode, deployServer } = useNationClouds();
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [serverConfig, setServerConfig] = useState({ name: '', desc: '', version: '1.20.4' });
   const [deploymentLog, setDeploymentLog] = useState<string[]>([]);
-  const [isDeployed, setDeployed] = useState(false);
+  const [deployedServer, setDeployedServer] = useState<any>(null);
 
   if (!isOpen) return null;
 
@@ -32,12 +32,13 @@ export default function DashboardModal({ isOpen, onClose, masterNode, onDeploy }
       `[System] Server Ready!`
     ]);
     setTimeout(() => {
-      onDeploy({ ...serverConfig, ...selectedPlan, ip: `0${masterNode.servers.length + 1}.Nationclouds.fun` });
-      setDeployed(true);
+      const newServer = { ...serverConfig, ...selectedPlan };
+      deployServer(newServer);
+      setDeployedServer(newServer);
     }, 3000);
   };
 
-  if (isDeployed) return <VirtualDashboard server={masterNode.servers[masterNode.servers.length - 1]} onClose={onClose} />;
+  if (deployedServer) return <VirtualDashboard server={deployedServer} onClose={onClose} />;
 
   return (
     <div className="fixed inset-0 bg-black/90 z-50 flex flex-col p-6">
@@ -45,6 +46,8 @@ export default function DashboardModal({ isOpen, onClose, masterNode, onDeploy }
         <h1 className="text-2xl font-bold text-blue-400">Nation Clouds™ Deployment</h1>
         <button onClick={onClose} className="text-gray-400 hover:text-white">Close</button>
       </div>
+
+      <div className="text-sm text-gray-400 mb-4">Master Node Capacity: {masterNode.ram}GB / 128GB RAM</div>
 
       {step === 1 && (
         <div className="space-y-4">
