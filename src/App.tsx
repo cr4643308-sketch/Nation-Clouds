@@ -13,6 +13,20 @@ import { useState } from 'react';
 
 export default function App() {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [masterNode, setMasterNode] = useState({
+    cpu: 48,
+    ram: 128,
+    disk: 1000,
+    servers: [] as any[]
+  });
+
+  const deployServer = (server: any) => {
+    setMasterNode(prev => ({
+      ...prev,
+      ram: prev.ram - server.ram,
+      servers: [...prev.servers, server]
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-white">
@@ -32,6 +46,8 @@ export default function App() {
       <DashboardModal 
         isOpen={isModalOpen} 
         onClose={() => setModalOpen(false)} 
+        masterNode={masterNode}
+        onDeploy={deployServer}
       />
 
       <Footer />

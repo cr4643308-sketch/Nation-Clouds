@@ -4,83 +4,81 @@ import VirtualDashboard from './VirtualDashboard';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  masterNode: any;
+  onDeploy: (server: any) => void;
 }
 
-export default function DashboardModal({ isOpen, onClose }: Props) {
-  const [activeTab, setActiveTab] = useState('Console');
-  const [installedPlugins, setInstalledPlugins] = useState<string[]>([]);
+export default function DashboardModal({ isOpen, onClose, masterNode, onDeploy }: Props) {
+  const [step, setStep] = useState(1);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [serverConfig, setServerConfig] = useState({ name: '', desc: '', version: '1.20.4' });
+  const [deploymentLog, setDeploymentLog] = useState<string[]>([]);
+  const [isDeployed, setDeployed] = useState(false);
 
   if (!isOpen) return null;
 
-  const tabs = ['Console', 'Log', 'Options', 'Software', 'Plugins', 'Files', 'Players', 'Pricing'];
+  const plans = [
+    { name: 'Premium: Dirt', ram: 2, price: 30 },
+    { name: 'Budget: Oak', ram: 4, price: 80 },
+    { name: 'Performance: Netherite', ram: 8, price: 2560 },
+  ];
 
-  const installPlugin = (plugin: string) => {
-    setInstalledPlugins(prev => [...prev, plugin]);
+  const handleDeploy = () => {
+    setStep(3);
+    setDeploymentLog([
+      `[System] Fetching Node 01 Resources...`,
+      `[System] Allocating ${selectedPlan.ram} GB RAM from Master Node...`,
+      `[System] Generating IP: 0${masterNode.servers.length + 1}.Nationclouds.fun...`,
+      `[System] Server Ready!`
+    ]);
+    setTimeout(() => {
+      onDeploy({ ...serverConfig, ...selectedPlan, ip: `0${masterNode.servers.length + 1}.Nationclouds.fun` });
+      setDeployed(true);
+    }, 3000);
   };
 
+  if (isDeployed) return <VirtualDashboard server={masterNode.servers[masterNode.servers.length - 1]} onClose={onClose} />;
+
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex flex-col">
-      <div className="flex justify-between items-center p-4 border-b border-gray-800">
-        <h1 className="text-xl font-bold text-blue-400">Nation Clouds™ Dashboard</h1>
+    <div className="fixed inset-0 bg-black/90 z-50 flex flex-col p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-400">Nation Clouds™ Deployment</h1>
         <button onClick={onClose} className="text-gray-400 hover:text-white">Close</button>
       </div>
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-48 bg-gray-900 border-r border-gray-800 p-4 flex flex-col gap-2">
-          {tabs.map(tab => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)}
-              className={`text-left py-2 px-4 rounded ${activeTab === tab ? 'bg-blue-900 text-white' : 'text-gray-400 hover:bg-gray-800'}`}
-            >
-              {tab}
-            </button>
-          ))}
+
+      {step === 1 && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold">Step 1: Select Plan</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {plans.map(plan => (
+              <button key={plan.name} onClick={() => { setSelectedPlan(plan); setStep(2); }} className="bg-gray-800 p-6 rounded hover:bg-gray-700 border border-gray-700">
+                <div className="font-bold text-lg">{plan.name}</div>
+                <div className="text-sm text-gray-400">{plan.ram}GB RAM - ₹{plan.price}</div>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex-1 p-6 overflow-y-auto">
-          {activeTab === 'Console' && <VirtualDashboard />}
-          {activeTab === 'Plugins' && (
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Plugins</h2>
-              {['EssentialsX', 'WorldEdit', 'Vault'].map(plugin => (
-                <div key={plugin} className="flex justify-between items-center bg-gray-800 p-4 rounded">
-                  <div>
-                    <div className="font-bold">{plugin}</div>
-                    <div className="text-xs text-gray-400">Compatible with 1.20.1</div>
-                  </div>
-                  {installedPlugins.includes(plugin) ? (
-                    <span className="text-green-500 font-bold">Installed Successfully</span>
-                  ) : (
-                    <button onClick={() => installPlugin(plugin)} className="bg-green-600 px-4 py-2 rounded font-bold">Install</button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-          {activeTab === 'Pricing' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Pricing Plans (INR)</h2>
-              {[
-                { name: 'Premium', plans: ['Dirt (₹30)', 'Gold (₹1000)'] },
-                { name: 'Budget', plans: ['Oak (₹80)', 'Netherite (₹1100)'] },
-                { name: 'Performance', plans: ['Dirt (₹80)', 'Netherite (₹2560)'] },
-                { name: 'VPS', plans: ['Plan 1 (₹800)', 'Plan 4 (₹2800)'] },
-              ].map(category => (
-                <div key={category.name}>
-                  <h3 className="font-bold text-blue-300 mb-2">{category.name}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {category.plans.map(plan => (
-                      <div key={plan} className="bg-gray-800 p-4 rounded flex justify-between items-center">
-                        <span>{plan}</span>
-                        <a href="https://discord.gg/WyRBSKPYD" target="_blank" rel="noreferrer" className="bg-blue-600 px-4 py-2 rounded font-bold">Buy Now</a>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      )}
+
+      {step === 2 && (
+        <div className="space-y-4 max-w-lg">
+          <h2 className="text-xl font-bold">Step 2: Server Configuration</h2>
+          <input type="text" placeholder="Server Name" className="w-full bg-gray-800 p-4 rounded" onChange={e => setServerConfig({...serverConfig, name: e.target.value})} />
+          <input type="text" placeholder="Description" className="w-full bg-gray-800 p-4 rounded" onChange={e => setServerConfig({...serverConfig, desc: e.target.value})} />
+          <select className="w-full bg-gray-800 p-4 rounded" onChange={e => setServerConfig({...serverConfig, version: e.target.value})}>
+            <option>1.20.4</option>
+            <option>1.19.2</option>
+            <option>1.8.8</option>
+          </select>
+          <button onClick={handleDeploy} className="w-full bg-blue-600 p-4 rounded font-bold">Deploy Server</button>
         </div>
-      </div>
+      )}
+
+      {step === 3 && (
+        <div className="bg-black p-6 rounded font-mono text-green-500">
+          {deploymentLog.map((log, i) => <div key={i}>{log}</div>)}
+        </div>
+      )}
     </div>
   );
 }

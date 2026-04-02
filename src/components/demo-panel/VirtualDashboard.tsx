@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function VirtualDashboard() {
+export default function VirtualDashboard({ server, onClose }: { server: any, onClose: () => void }) {
+  const [activeTab, setActiveTab] = useState('Console');
   const [status, setStatus] = useState('Online');
   const [logs, setLogs] = useState<string[]>([
-    '[NC-System] Allocating 128GB RAM... Done!',
-    '[Server] Loading level "world"...',
-    '[Server] Nation Clouds Node Optimized!'
+    `[System] Allocating ${server.ram} GB RAM from Master Node...`,
+    `[System] Server Ready!`
   ]);
+  const [installedPlugins, setInstalledPlugins] = useState<string[]>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,64 +25,71 @@ export default function VirtualDashboard() {
     } else if (action === 'Restart') {
       setStatus('Restarting...');
       addLog('Restarting server...');
-      setTimeout(() => {
-        setStatus('Online');
-        addLog('Server online.');
-      }, 2000);
+      setTimeout(() => { setStatus('Online'); addLog('Server online.'); }, 2000);
     } else if (action === 'Start') {
       setStatus('Starting...');
       addLog('Starting server...');
-      setTimeout(() => {
-        setStatus('Online');
-        addLog('Server online.');
-      }, 3000);
+      setTimeout(() => { setStatus('Online'); addLog('Server online.'); }, 3000);
     }
   };
 
-  // Simulate random crash
-  useEffect(() => {
-    if (status === 'Online') {
-      const timer = setTimeout(() => {
-        if (Math.random() > 0.7) {
-          setStatus('Offline');
-          addLog('Server Crashed!');
-          setTimeout(() => {
-            addLog('Nation Clouds Auto-Restarting...');
-            setStatus('Starting...');
-            setTimeout(() => {
-              setStatus('Online');
-              addLog('Done! Server online.');
-            }, 2000);
-          }, 1000);
-        }
-      }, 10000);
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
+  const tabs = ['Console', 'Log', 'Options', 'Software', 'Plugins', 'Files', 'Players', 'Pricing'];
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-blue-400">01.Nationclouds.fun</h2>
-        <div className={`px-3 py-1 rounded font-bold ${status === 'Online' ? 'bg-green-900 text-green-300 animate-pulse' : 'bg-red-900 text-red-300'}`}>{status}</div>
+    <div className="flex h-full bg-gray-950 text-white">
+      <div className="w-48 bg-gray-900 border-r border-gray-800 p-4 flex flex-col gap-2">
+        <div className="font-bold text-blue-400 mb-4">Nation Clouds™</div>
+        {tabs.map(tab => (
+          <button key={tab} onClick={() => setActiveTab(tab)} className={`text-left py-2 px-4 rounded ${activeTab === tab ? 'bg-blue-900' : 'hover:bg-gray-800'}`}>{tab}</button>
+        ))}
+        <button onClick={onClose} className="mt-auto text-red-400">Close Dashboard</button>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gray-800 p-4 rounded text-sm">CPU: AMD EPYC™ 7 (48 Cores)</div>
-        <div className="bg-gray-800 p-4 rounded text-sm">RAM: 128GB DDR4</div>
-        <div className="bg-gray-800 p-4 rounded text-sm">Storage: 1TB NVMe SSD</div>
-        <div className="bg-gray-800 p-4 rounded text-sm">Network: 50 Gbps</div>
-      </div>
-
-      <div className="flex gap-4 mb-6">
-        <button onClick={() => handleAction('Start')} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-bold">START</button>
-        <button onClick={() => handleAction('Restart')} className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded font-bold">RESTART</button>
-        <button onClick={() => handleAction('Stop')} className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-bold">STOP</button>
-      </div>
-
-      <div className="bg-black p-4 rounded font-mono text-green-500 text-xs h-60 overflow-y-auto border border-gray-700">
-        {logs.map((log, i) => <div key={i}>{log}</div>)}
-        <div ref={logsEndRef} />
+      <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">{server.name} ({server.ip})</h2>
+          <div className={`px-3 py-1 rounded font-bold ${status === 'Online' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>{status}</div>
+        </div>
+        
+        {activeTab === 'Console' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-4 gap-4">
+              <div className="bg-gray-800 p-4 rounded">CPU: 48 Cores</div>
+              <div className="bg-gray-800 p-4 rounded">RAM: {server.ram}GB / 128GB</div>
+              <div className="bg-gray-800 p-4 rounded">Disk: 1TB NVMe</div>
+              <div className="bg-gray-800 p-4 rounded">Network: 50 Gbps</div>
+            </div>
+            <div className="flex gap-4">
+              <button onClick={() => handleAction('Start')} className="bg-green-600 px-6 py-2 rounded font-bold">START</button>
+              <button onClick={() => handleAction('Restart')} className="bg-gray-600 px-6 py-2 rounded font-bold">RESTART</button>
+              <button onClick={() => handleAction('Stop')} className="bg-red-600 px-6 py-2 rounded font-bold">STOP</button>
+            </div>
+            <div className="bg-black p-4 rounded font-mono text-green-500 text-xs h-60 overflow-y-auto border border-gray-700">
+              {logs.map((log, i) => <div key={i}>{log}</div>)}
+              <div ref={logsEndRef} />
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'Plugins' && (
+          <div className="grid grid-cols-2 gap-4">
+            {['EssentialsX', 'WorldEdit', 'Vault', 'ViaVersion', 'GeyserMC', 'ClearLag'].map(plugin => (
+              <div key={plugin} className="bg-gray-800 p-4 rounded flex justify-between items-center">
+                <span>{plugin}</span>
+                <button onClick={() => { addLog(`[NC-Installer] Downloading ${plugin}.jar... Done!`); setInstalledPlugins([...installedPlugins, plugin]); }} className="bg-green-600 px-4 py-2 rounded">Install</button>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {activeTab === 'Files' && (
+          <div className="bg-gray-800 p-4 rounded font-mono">
+            <div>/plugins</div>
+            <div>/world</div>
+            <div>server.properties</div>
+            <div>spigot.yml</div>
+          </div>
+        )}
       </div>
     </div>
   );
