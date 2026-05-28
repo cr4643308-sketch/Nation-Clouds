@@ -43,7 +43,7 @@ export default function Hero() {
           whileHover={{ scale: 1.05 }}
           animate={{ boxShadow: ["0 0 0px var(--primary-accent)", "0 0 20px var(--primary-accent)", "0 0 0px var(--primary-accent)"] }}
           transition={{ duration: 2, repeat: Infinity }}
-          onClick={() => window.open('https://discord.gg/WyRBSKPYD', '_blank')}
+          onClick={() => window.open('https://discord.gg/9gFy8e7Jq', '_blank')}
           className="accent-bg px-10 py-4 rounded-full text-lg font-bold"
         >
           Join the Family - Start Hosting Today! 🚀
